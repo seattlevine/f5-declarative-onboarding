@@ -4,14 +4,36 @@
     "title": "F5 Declarative Onboarding base declaration",
     "description": "Schema for onboarding a BIG-IP.",
     "type": "object",
-    "oneOf": [
+    "required": ["class"],
+    "properties": {
+        "class": {
+            "description": "Top level class. Indicates whether this is a deployment directly to a BIG-IP or to some other system such as BIG-IQ.",
+            "enum": [
+                "Device",
+                "DO"
+            ]
+        }
+    },
+    "allOf": [
         {
-            "description": "Deploy directly on a BIG-IP.",
-            "$ref": "base.schema.json#"
+            "if": {
+                "required": ["class"],
+                "properties": { "class": { "const": "Device" } }
+            },
+            "then": {
+                "description": "Indicates that this is a deployment directly to a BIG-IP.",
+                "$ref": "base.schema.json#"
+            }
         },
         {
-            "description": "Deploy via another system, such as BIG-IQ.",
-            "$ref": "remote.schema.json#"
+            "if": {
+                "required": ["class"],
+                "properties": { "class": { "const": "DO" } }
+            },
+            "then": {
+                "description": "Indicates that this is a deployment through an intermediary like BIG-IQ.",
+                "$ref": "remote.schema.json#"
+            }
         }
     ]
 }
